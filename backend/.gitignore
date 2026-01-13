@@ -1,0 +1,9 @@
+# Python
+__pycache__/
+*.pyc
+.env
+.pytest_cache/
+logs/
+
+# Data
+data/faiss_index/

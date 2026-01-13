@@ -1,0 +1,13 @@
+# General
+.DS_Store
+Thumbs.db
+
+# Virtual Environment (Root)
+venv/
+
+# Environment (Root)
+.env
+
+# IDEs
+.vscode/
+.idea/
