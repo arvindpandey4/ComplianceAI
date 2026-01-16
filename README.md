@@ -13,8 +13,10 @@ The Regulatory Compliance Assistant transforms complex regulatory compliance que
 - **💬 Context-Aware Conversations**: Maintains conversation history for follow-up questions and clarifications
 - **🎯 Compliance Assessment**: Provides structured compliance status (Compliant/Non-Compliant/Needs Review)
 - **📖 Source Citations**: Every response includes references to specific regulatory documents
+- **⚡ Fast Track Retrieval**: Instant answers from a curated Golden Knowledge Base for high-confidence matches
+- **🧠 Dynamic Reranking**: Advanced relevance scoring (FlashRank) to prioritize the best context
 - **🔍 Smart Query Classification**: Distinguishes between initial queries, follow-ups, clarifications, and expansions
-- **⚡ Real-time Responses**: Fast inference with optimized token management
+- **⚡ Real-time Responses**: Fast inference with optimized token management and fast-track routing
 - **🎨 Modern UI**: Clean, ChatGPT-inspired interface built with React and Tailwind CSS
 
 ---
@@ -75,6 +77,12 @@ The Regulatory Compliance Assistant transforms complex regulatory compliance que
 │  └─────────────────┘              └──────────────────┘     │
 │         │                                                    │
 │         ▼                                                    │
+│  ┌─────────────────┐                                         │
+│  │ Golden KB Store │ (Fast Track Path)                       │
+│  │ (Direct Match)  │                                         │
+│  └─────────────────┘                                         │
+│         │                                                    │
+│         ▼                                                    │
 │  ┌─────────────────────────────────────────────────────┐   │
 │  │          MongoDB (Chat History)                     │   │
 │  │  • Session Storage                                  │   │
@@ -126,6 +134,10 @@ The Regulatory Compliance Assistant transforms complex regulatory compliance que
    ```bash
    # The vector store will be created automatically on first run
    # Or use the ingestion endpoint via API
+
+   # To ingest the Golden Knowledge Base (Fast Track):
+   cd backend
+   python ingest_kb.py
    ```
 
 5. **Frontend Setup**
@@ -316,10 +328,13 @@ regulatory_compliance_assistant/
 │   │       ├── agent.py              # Compliance agent (core logic)
 │   │       ├── chat_history.py       # Conversation management
 │   │       ├── document_processor.py # PDF processing
+│   │       ├── reranker.py           # FlashRank reranking
 │   │       └── vector_store.py       # FAISS vector store
 │   ├── data/
 │   │   ├── documents/                # Source PDFs
+│   │   ├── knowledge_base.json       # Golden KB for fast track
 │   │   └── vector_store/             # FAISS index
+│   ├── ingest_kb.py                  # Script to ingest Golden KB
 │   ├── main.py                       # FastAPI app
 │   ├── requirements.txt              # Python dependencies
 │   ├── .env                          # Environment variables
@@ -383,6 +398,13 @@ Robust fallback mechanisms:
 - **Schema Validation**: Graceful handling of missing fields
 - **Fallback Responses**: User-friendly error messages
 - **Detailed Logging**: Comprehensive error tracking
+
+### 6. Performance Optimization (New)
+
+Advanced techniques for speed and accuracy:
+- **Golden Knowledge Base**: A curated JSON store of high-confidence Q&A pairs. Queries matching these entries bypass the expensive LLM generation phase, providing instant, vetted answers.
+- **Dynamic Reranking**: Uses `FlashRank` to re-score retrieved documents. This ensures that the most semantically relevant chunks are prioritized in the context window, improving response quality significantly.
+- **Hybrid Retrieval**: Combines vector search with keyword matching (via reranking) for robust results.
 
 ---
 
