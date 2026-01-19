@@ -46,67 +46,65 @@ The Regulatory Compliance Assistant transforms complex regulatory compliance que
 
 ```mermaid
 graph TD
-    %% =========================
-    %% Client / UI Layer
-    %% =========================
-    Client[CompliancAI Web Client<br/>(React + Vite + Tailwind)] <-->|REST API (JSON)<br/>/api/v1/query| API[FastAPI Backend<br/>(Python 3.11+)]
-    Client <-->|Upload PDF (multipart)<br/>/api/v1/ingest| API
-    Client <-->|Health Check<br/>/api/v1/health| API
 
-    %% =========================
-    %% Persistence / Storage
-    %% =========================
-    API <-->|Read/Write Sessions<br/>Chat History| Mongo[(MongoDB / Atlas)]
-    API -->|Read Golden KB<br/>fast-track Q&A| GoldenKB[(Golden Knowledge Base<br/>JSON Store)]
-    API -->|Read Follow-up KB| FollowupKB[(Follow-up Questions KB<br/>JSON Store)]
+    Client[CompliancAI Web Client]
+    API[FastAPI Backend]
 
-    %% =========================
-    %% Agent System (PydanticAI)
-    %% =========================
-    subgraph AgentOrchestration[PydanticAI Agent Orchestration]
-        Router[Query Router<br/>Classification + Fast-Track Gate] -->|If fast-track match| FastTrack[Fast-Track Answer Builder]
-        Router -->|Else: Retrieval Pipeline| Retrieve[Context Retrieval Tool<br/>(FAISS Similarity Search)]
-        Retrieve --> Rerank[Re-ranking Tool<br/>(FlashRank)]
-        Rerank --> ContextPack[Context Assembly<br/>Top-K Chunks + Metadata]
-        ContextPack --> Agent[PydanticAI Compliance Agent<br/>(Strict Output Schema)]
-        Agent --> Validate[Schema Validation<br/>(Pydantic Result Model)]
-        Validate --> Followups[Follow-up Generator<br/>(Context-aware Qs)]
+    Client -->|Query API| API
+    Client -->|Ingest API| API
+    Client -->|Health API| API
+
+    Mongo[(MongoDB Atlas)]
+    GoldenKB[(Golden Knowledge Base)]
+    FollowupKB[(Followup Questions KB)]
+
+    API --> Mongo
+    API --> GoldenKB
+    API --> FollowupKB
+
+    subgraph PydanticAI[PydanticAI Agent Orchestration]
+        Router[Query Router]
+        FastTrack[Fast Track Answer]
+        Retrieve[Context Retrieval Tool]
+        Rerank[Reranker FlashRank]
+        Context[Context Assembly]
+        Agent[Compliance Agent]
+        Validate[Output Validation]
+        Followups[Followup Suggestions]
     end
 
-    API -->|Invoke| Router
+    API --> Router
+    Router --> FastTrack
+    Router --> Retrieve
+    Retrieve --> Rerank
+    Rerank --> Context
+    Context --> Agent
+    Agent --> Validate
+    Validate --> Followups
 
-    %% =========================
-    %% Retrieval Components
-    %% =========================
-    subgraph RetrievalLayer[RAG Retrieval Layer]
-        FAISS[(FAISS Vector Store<br/>Index + Doc Chunks)]
-        Embeddings[Sentence Transformers<br/>(all-MiniLM-L6-v2)]
-        Docs[(Regulatory PDF Corpus<br/>/data/documents)]
+    subgraph RAG[RAG Retrieval Layer]
+        Docs[(Regulatory PDF Documents)]
+        Embed[Embeddings Sentence Transformers]
+        FAISS[(FAISS Vector Store)]
     end
 
-    API -->|Search Top-N| FAISS
-    Docs -->|Chunk + Embed| Embeddings
-    Embeddings -->|Vectors| FAISS
+    Docs --> Embed
+    Embed --> FAISS
+    Retrieve --> FAISS
 
-    %% =========================
-    %% LLM Providers + Fallback
-    %% =========================
-    subgraph ModelLayer[LLM Providers (Primary + Fallback)]
-        Groq[Groq API<br/>Llama 3.3 70B]
-        OpenRouter[OpenRouter API<br/>Free/Low-Cost Model Fallback]
+    subgraph Models[LLM Providers]
+        Groq[Groq LLM Primary]
+        OpenRouter[OpenRouter LLM Fallback]
     end
 
-    Agent -->|Primary Inference| Groq
-    Agent -->|Fallback on timeout/429/errors| OpenRouter
+    Agent --> Groq
+    Agent --> OpenRouter
 
-    %% =========================
-    %% Observability / Reliability
-    %% =========================
-    subgraph Reliability[Production Reliability]
-        Logs[Structured Logging<br/>JSON + Correlation IDs]
-        Retry[Retries + Timeouts<br/>Backoff Strategy]
-        SafeErrors[Error Sanitization<br/>Consistent API Errors]
-        RateLimit[Rate Limiting<br/>Per IP/Session]
+    subgraph Reliability[Reliability and Observability]
+        Logs[Structured Logging]
+        Retry[Retries and Timeouts]
+        SafeErrors[Safe Error Handling]
+        RateLimit[Rate Limiting]
     end
 
     API --> Logs
@@ -114,23 +112,14 @@ graph TD
     API --> SafeErrors
     API --> RateLimit
 
-    %% =========================
-    %% Response Contract
-    %% =========================
-    subgraph Response[Response Output Contract]
-        Output[JSON Response<br/>response + status + reasoning<br/>relevant_clauses + sources[]<br/>conversation_type + followup_questions]
-    end
+    Output[Validated Response Payload]
+    Followups --> Output
+    Output --> Client
 
-    Validate --> Output
-    Output -->|Return to Client| Client
-
-    %% =========================
-    %% Deployment Targets
-    %% =========================
-    subgraph Deployment[Live Deployment]
-        WebHost[Frontend Hosting<br/>Vercel / Netlify]
-        APIHost[Backend Hosting<br/>Render / Railway / Fly.io]
-        DBHost[MongoDB Atlas<br/>(Managed)]
+    subgraph Deploy[Live Deployment]
+        WebHost[Frontend Vercel or Netlify]
+        APIHost[Backend Render or Railway]
+        DBHost[MongoDB Atlas Managed]
     end
 
     Client --> WebHost
