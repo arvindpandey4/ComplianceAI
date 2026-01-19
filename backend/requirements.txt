@@ -12,7 +12,9 @@ google-generativeai
 # ===============================
 pydantic>=2.10
 pydantic-settings
-pydantic-ai==0.0.13
+pydantic-ai>=0.0.18
+griffe>=0.48.0
+devtools
 
 # ===============================
 # Vector Database
@@ -30,7 +32,8 @@ tiktoken==0.7.0
 # ===============================
 fastapi==0.111.0
 uvicorn==0.30.1
-motor==3.4.0
+motor>=3.6.0
+python-multipart
 
 # ===============================
 # File & Document Handling
@@ -48,6 +51,6 @@ numpy==1.26.4
 tqdm==4.66.4
 
 # ===============================
-# Optional (Logging & Debug)
+# Logging & Debug
 # ===============================
 loguru==0.7.2

@@ -148,6 +148,21 @@ const ChatInterface = () => {
         const isThinking = msg.isThinking;
         const [showDetails, setShowDetails] = React.useState(false);
 
+        // Handle Backend Error Types explicitly
+        if (msg.conversation_type === 'error') {
+            return (
+                <div className="w-full text-center py-5 border-b border-red-500/20 bg-red-500/5 text-red-500/80 text-sm">
+                    <AlertTriangle className="w-5 h-5 inline mr-2 -mt-1" />
+                    <strong>System Error:</strong> {msg.response || "An unexpected error occurred."}
+                    {msg.reasoning && (
+                        <div className="text-xs mt-2 font-mono bg-black/20 p-2 rounded max-w-2xl mx-auto text-left opacity-80">
+                            {msg.reasoning}
+                        </div>
+                    )}
+                </div>
+            );
+        }
+
         if (isSystem) {
             return (
                 <div className="w-full text-center py-5 border-b border-black/10 dark:border-gray-900/50 text-gray-500 text-sm">
@@ -254,18 +269,21 @@ const ChatInterface = () => {
                                             {msg.sources.map((src, i) => (
                                                 <div
                                                     key={i}
-                                                    className="group/src relative flex items-center gap-1.5 bg-black/30 hover:bg-black/50 px-3 py-1.5 rounded-md text-xs text-gray-400 hover:text-gray-300 cursor-pointer transition-all border border-white/5 hover:border-white/10"
-                                                    title={src.excerpt}
+                                                    className="group/src relative flex items-center gap-1.5 bg-black/30 hover:bg-black/50 px-3 py-1.5 rounded-md text-xs text-gray-400 hover:text-gray-300 cursor-help transition-all border border-white/5 hover:border-white/10"
+                                                    title={src.excerpt || "No excerpt available"}
                                                 >
                                                     <FileText className="w-3 h-3 text-blue-400" />
-                                                    <span className="max-w-[150px] truncate font-medium">{src.document_name}</span>
-                                                    {src.page_number && <span className="opacity-50">• p{src.page_number}</span>}
+                                                    <span className="max-w-[150px] truncate font-medium">{src.document_name || "Unknown Source"}</span>
+                                                    {(src.page_number || src.relevance_score) && (
+                                                        <span className="opacity-50 ml-1">
+                                                            {src.page_number ? `• p${src.page_number}` : `• ${(src.relevance_score * 100).toFixed(0)}% match`}
+                                                        </span>
+                                                    )}
                                                 </div>
                                             ))}
                                         </div>
                                     </div>
                                 )}
-
                                 {/* Follow-up Questions */}
                                 {!isUser && msg.follow_up_questions && msg.follow_up_questions.length > 0 && (
                                     <div className="mt-4 pt-3 border-t border-white/10">

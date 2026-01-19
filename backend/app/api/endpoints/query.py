@@ -1,12 +1,15 @@
 from fastapi import APIRouter, HTTPException, Depends
 from typing import Optional
-from app.services.agent import compliance_agent, AgentDeps
+import uuid
+
+# use new PydanticAI agent
+from app.services.pydantic_agent import run_pydantic_agent
 from app.services.vector_store import VectorStoreService
 from app.services.chat_history import ChatHistoryService
 from app.models.schemas import QueryRequest, QueryResponse
-import uuid
 
 router = APIRouter()
+
 def get_vector_store():
     return VectorStoreService()
 
@@ -23,43 +26,35 @@ async def query_compliance(
     session_id = request.session_id or str(uuid.uuid4())
     
     try:
-        # Retrieve conversation history
-        history = await chat_service.get_history(session_id)
+        # Run PydanticAI Agent
+        # The agent handles tool orchestration (context retrieval, history, etc.)
+        result_data = await run_pydantic_agent(request.query, session_id=session_id)
         
-        # Format history for better context
-        formatted_history = ""
-        if history:
-            formatted_history = "\n".join([
-                f"{'User' if msg['role'] == 'user' else 'Assistant'}: {msg['content']}" 
-                for msg in history
-            ])
+        print(f"[QUERY] Completed. Status: {result_data.status}")
         
-        deps = AgentDeps(vector_store=vector_store)
-        
-        result = await compliance_agent.run(
-            query=request.query, 
-            deps=deps, 
-            history_context=formatted_history
-        )
-        print(f"[QUERY] Completed. Status: {result.data.status}")
-        
-        # Save user message
+        # Save Interaction to DB
+        # We save separate messages for user and assistant
         await chat_service.add_message(session_id, "user", request.query)
         
-        # Save the conversational response (fallback to reasoning if empty)
-        response_to_save = result.data.response or result.data.reasoning or "Processed."
-        result.data.response = response_to_save
+        # Ensure we always have a string response
+        response_text = result_data.response
+        if not response_text and result_data.reasoning:
+            response_text = result_data.reasoning
+        if not response_text:
+            response_text = "Analysis completed."
+            
+        await chat_service.add_message(session_id, "assistant", response_text)
         
-        await chat_service.add_message(session_id, "assistant", response_to_save)
-        
+        # Return strict schema
         return {
             "session_id": session_id,
-            "data": result.data
+            "data": result_data
         }
         
     except Exception as e:
         print(f"[ERROR] Query failed: {e}")
         import traceback
         traceback.print_exc()
-        raise HTTPException(status_code=500, detail=str(e))
+        # Safe sanitization
+        raise HTTPException(status_code=500, detail="Internal Server Error: Unable to process request.")
 
