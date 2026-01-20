@@ -1,5 +1,7 @@
 # ComplianceAI - Regulatory Compliance Assistant
 
+[![Live Demo](https://img.shields.io/badge/Live%20Demo-Visit%20App-brightgreen?style=for-the-badge&logo=vercel)](https://compliance-ai-arvind.vercel.app/)
+
 ![Status](https://img.shields.io/badge/Status-Production%20Ready-success)
 ![License](https://img.shields.io/badge/License-MIT-blue)
 ![Tech Stack](https://img.shields.io/badge/Stack-FastAPI%20%7C%20React%20%7C%20LangChain-blueviolet)
