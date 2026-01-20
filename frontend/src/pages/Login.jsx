@@ -21,7 +21,7 @@ function Login({ onLogin }) {
                 email,
                 password
             }, {
-                timeout: 15000 // 15 second timeout
+                timeout: 60000 // 60 second timeout
             });
 
             const { access_token, user } = response.data;

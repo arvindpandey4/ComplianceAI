@@ -44,7 +44,7 @@ function Register({ onRegister }) {
                 password: formData.password,
                 full_name: formData.full_name
             }, {
-                timeout: 15000 // 15 second timeout
+                timeout: 60000 // 60 second timeout
             });
 
             const { access_token, user } = response.data;
