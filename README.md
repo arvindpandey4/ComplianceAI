@@ -4,18 +4,19 @@
 
 ![Status](https://img.shields.io/badge/Status-Production%20Ready-success)
 ![License](https://img.shields.io/badge/License-MIT-blue)
-![Tech Stack](https://img.shields.io/badge/Stack-FastAPI%20%7C%20React%20%7C%20LangChain-blueviolet)
+![Tech Stack](https://img.shields.io/badge/Stack-FastAPI%20%7C%20React%20%7C%20PydanticAI%20%7C%20LangChain-blueviolet)
 
 **ComplianceAI** is an advanced, production-grade **RAG (Retrieval-Augmented Generation)** application designed to assist auditors and compliance officers. It automates specific regulatory inquiries by cross-referencing user queries against uploaded compliance documents, specifically optimized for the *Compliance Auditing Guidelines (C&AG of India)*.
 
-Unlike generic chatbots, ComplianceAI features a **Hybrid RAG Logic** with a "Fast Track" system for zero-latency Knowledge Base retrieval and configurable **Auditor Personas** to tailor the analysis tone.
+Unlike generic chatbots, ComplianceAI features a **Hybrid RAG Logic** powered by **PydanticAI** and **LangChain**, with a "Fast Track" system for zero-latency Knowledge Base retrieval and configurable **Auditor Personas** to tailor the analysis tone.
 
 ---
 
 ## 🚀 Key Features
 
 ### 🧠 Advanced RAG Intelligence
-- **Hybrid Search Architecture**: Combines dense vector retrieval (FAISS) with high-precision reranking (Cross-Encoder) for superior accuracy.
+- **Agentic Logic**: Built with **PydanticAI** for robust structured updates and flow control.
+- **Hybrid Search Architecture**: Combines dense vector retrieval (FAISS) with high-precision logic for superior accuracy.
 - **"Fast Track" Retrieval**: Instantly detects queries matching the Golden Knowledge Base, bypassing the LLM for faster, hallucination-free answers.
 - **Context-Aware Follow-ups**: Automatically suggests relevant follow-up questions based on the retrieved context.
 
@@ -38,10 +39,10 @@ Customize the AI's behavior via Profile Settings to match your reporting needs:
 
 ### Backend
 - **Framework**: FastAPI (Python 3.9+)
-- **LLM Engine**: LangChain + Groq API (Llama-3.70b-versatile)
-- **Vector Store**: FAISS (Local) + SentenceTransformers (`all-MiniLM-L6-v2`)
+- **Agent Framework**: **PydanticAI** + LangChain
+- **LLM Engine**: Groq API (Llama-3.70b-versatile)
+- **Vector Store**: FAISS (Local) + FastEmbed (`BAAI/bge-small-en-v1.5`)
 - **Database**: MongoDB Atlas (User data & Chat History)
-- **Reranker**: `cross-encoder/ms-marco-MiniLM-L-6-v2`
 
 ### Frontend
 - **Framework**: React.js (Vite)
@@ -64,8 +65,8 @@ graph TD
     
     subgraph "RAG Pipeline"
         API -->|Search| VectorDB[(FAISS Index)]
-        VectorDB -->|Top K Docs| Reranker[Cross-Encoder]
-        Reranker -->|Relevance Score| Decision{Confidence > Threshold?}
+        VectorDB -->|Top K Docs| Logic[PydanticAI Controller]
+        Logic -->|Relevance Check| Decision{Confidence > Threshold?}
         
         Decision -- Yes (Fast Track) --> KB[Golden KB Match]
         Decision -- No (Standard) --> LLM[Groq Llama-3]
@@ -152,7 +153,7 @@ ComplianceAI/
 │   ├── app/
 │   │   ├── api/            # API Routes & Endpoints
 │   │   ├── core/           # Auth & DB Config
-│   │   ├── services/       # RAG Agent, Vector Store, Chat History
+│   │   ├── services/       # PydanticAI Agent, Vector Store
 │   │   └── models/         # Pydantic Schemas
 │   ├── data/
 │   │   ├── faiss_index/    # Local Vector Embeddings
