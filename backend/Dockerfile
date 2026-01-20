@@ -33,6 +33,6 @@ COPY . .
 EXPOSE 8000
 
 # Start command
-# We use shell form to allow variable expansion if needed, but array form is safer.
-# Using 0.0.0.0 to bind to all interfaces for Render
-CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
+# Using shell form to support $PORT variable expansion
+# Render sets PORT env var (default 10000), fallback to 8000 if missing
+CMD uvicorn main:app --host 0.0.0.0 --port ${PORT:-8000}

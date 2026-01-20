@@ -24,7 +24,8 @@ faiss-cpu==1.8.0.post1
 # ===============================
 # Embeddings & NLP
 # ===============================
-sentence-transformers==2.7.0
+fastembed==0.2.7
+# sentence-transformers==2.7.0 (Removed to save memory)
 tiktoken==0.7.0
 
 # ===============================
