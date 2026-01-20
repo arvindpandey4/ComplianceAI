@@ -1,29 +1,38 @@
-# Use an official Python runtime as a parent image
-FROM python:3.11-slim
+# Use official lightweight Python image
+FROM python:3.9-slim
 
-# Set the working directory in the container
+# Set environment variables
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1 \
+    PORT=8000
+
+# Set working directory
 WORKDIR /app
 
-# Install system dependencies
-# libgomp1 is needed for FAISS/PyTorch (OpenMP support)
-# We use --no-install-recommends and clean up apt lists to keep image size small
+# Install system dependencies (needed for some python packages)
 RUN apt-get update && apt-get install -y --no-install-recommends \
     build-essential \
-    libgomp1 \
     && rm -rf /var/lib/apt/lists/*
 
-# Copy the requirements file into the container
+# Copy requirements first to leverage Docker cache
 COPY requirements.txt .
 
-# Install any needed packages specified in requirements.txt
-# --no-cache-dir reduces the image size by not saving the pip cache
-RUN pip install --no-cache-dir -r requirements.txt
+# Install Python dependencies
+# Using --no-cache-dir to keep image size small
+RUN pip install --no-cache-dir --upgrade pip && \
+    pip install --no-cache-dir -r requirements.txt
 
-# Copy the current directory contents into the container at /app
+# Create necessary directories for creating data at runtime if needed
+RUN mkdir -p /app/data/uploads && \
+    mkdir -p /app/data/faiss_index
+
+# Copy the rest of the application code
 COPY . .
 
-# Make port 8000 available to the world outside this container
+# Expose the API port
 EXPOSE 8000
 
-# Run main.py when the container launches
+# Start command
+# We use shell form to allow variable expansion if needed, but array form is safer.
+# Using 0.0.0.0 to bind to all interfaces for Render
 CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
