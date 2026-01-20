@@ -9,7 +9,7 @@ from app.core.middleware import logging_middleware
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    db.connect()
+    await db.connect()
     yield
     db.close()
 
