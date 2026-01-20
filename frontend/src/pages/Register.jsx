@@ -43,13 +43,21 @@ function Register({ onRegister }) {
                 email: formData.email,
                 password: formData.password,
                 full_name: formData.full_name
+            }, {
+                timeout: 15000 // 15 second timeout
             });
 
             const { access_token, user } = response.data;
             onRegister(access_token, user);
             navigate('/dashboard');
         } catch (err) {
-            setError(err.response?.data?.detail || 'Registration failed. Please try again.');
+            if (err.code === 'ECONNABORTED') {
+                setError('Request timeout. Please check your connection and try again.');
+            } else if (err.code === 'ERR_NETWORK') {
+                setError('Cannot connect to server. Please check if the backend is running.');
+            } else {
+                setError(err.response?.data?.detail || 'Registration failed. Please try again.');
+            }
         } finally {
             setIsLoading(false);
         }

@@ -11,7 +11,7 @@ SECRET_KEY = os.getenv("SECRET_KEY", "your-secret-key-change-in-production-min-3
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 60 * 24 * 7  # 7 days
 
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto", bcrypt__rounds=10)
+pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto", bcrypt__rounds=4)
 security = HTTPBearer()
 
 def verify_password(plain_password: str, hashed_password: str) -> bool:
