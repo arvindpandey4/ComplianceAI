@@ -1,24 +1,58 @@
-from pydantic import BaseModel, Field
-from typing import List, Optional
+from pydantic import BaseModel, EmailStr, Field
+from typing import Optional, List
+from datetime import datetime
 
-class ComplianceSource(BaseModel):
-    document_name: str
-    excerpt: str
-    relevance_score: Optional[float] = None
+# Authentication Schemas
+class UserRegister(BaseModel):
+    email: EmailStr
+    password: str = Field(..., min_length=8)
+    full_name: str
 
-class ComplianceAssessment(BaseModel):
-    response: Optional[str] = Field(default=None, description="Natural, conversational response to the user's query")
-    status: Optional[str] = Field(default=None, description="Compliant, Non-Compliant, Needs Review, or N/A for follow-up questions")
-    reasoning: Optional[str] = Field(default=None, description="Detailed technical explanation when needed")
-    relevant_clauses: List[str] = Field(default_factory=list, description="Specific clauses or rules found")
-    sources: List[ComplianceSource] = Field(default_factory=list, description="Source documents referenced")
-    conversation_type: str = Field(default="analysis", description="Type: 'analysis', 'follow_up', 'clarification', or 'expansion'")
-    follow_up_questions: List[str] = Field(default_factory=list, description="Contextual follow-up questions to guide the user")
+class UserLogin(BaseModel):
+    email: EmailStr
+    password: str
 
+class Token(BaseModel):
+    access_token: str
+    token_type: str = "bearer"
+    user: dict
+
+class TokenData(BaseModel):
+    email: Optional[str] = None
+
+# User Schema
+class User(BaseModel):
+    id: str
+    email: EmailStr
+    full_name: str
+    agent_persona: str = "strict_formal"
+    created_at: datetime
+    is_active: bool = True
+
+class UserUpdate(BaseModel):
+    full_name: Optional[str] = None
+    agent_persona: Optional[str] = None
+
+# Update existing QueryRequest to include user_id
 class QueryRequest(BaseModel):
     query: str
     session_id: Optional[str] = None
 
 class QueryResponse(BaseModel):
     session_id: str
-    data: ComplianceAssessment
+    data: 'ComplianceAssessment'
+
+# Keep existing ComplianceAssessment and ComplianceSource
+class ComplianceSource(BaseModel):
+    document_name: str
+    excerpt: str
+    relevance_score: float
+
+class ComplianceAssessment(BaseModel):
+    response: str
+    status: Optional[str] = None
+    reasoning: Optional[str] = None
+    relevant_clauses: List[str] = []
+    sources: List[ComplianceSource] = []
+    conversation_type: str = "analysis"
+    follow_up_questions: List[str] = []

@@ -1,9 +1,10 @@
 import os
 import shutil
-from fastapi import APIRouter, UploadFile, File, HTTPException, BackgroundTasks
+from fastapi import APIRouter, UploadFile, File, HTTPException, BackgroundTasks, Depends
 from typing import List
 from app.services.document_processor import DocumentProcessor
 from app.services.vector_store import VectorStoreService
+from app.core.auth import get_current_user
 
 router = APIRouter()
 processor = DocumentProcessor()
@@ -28,6 +29,7 @@ async def process_file_task(file_path: str, filename: str):
 @router.post("/")
 async def ingest_documents(
     background_tasks: BackgroundTasks,
+    current_user: dict = Depends(get_current_user),
     files: List[UploadFile] = File(...)
 ):
     saved_files = []

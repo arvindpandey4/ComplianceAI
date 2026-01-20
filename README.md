@@ -1,295 +1,169 @@
-# Regulatory Compliance Assistant - RAG Application
+# ComplianceAI - Regulatory Compliance Assistant
 
-A sophisticated AI-powered Regulatory Compliance Assistant built using specific Agentic  architecture. This application provides intelligent, conversational compliance guidance by combining large language models with a comprehensive regulatory document knowledge base.
+![Status](https://img.shields.io/badge/Status-Production%20Ready-success)
+![License](https://img.shields.io/badge/License-MIT-blue)
+![Tech Stack](https://img.shields.io/badge/Stack-FastAPI%20%7C%20React%20%7C%20LangChain-blueviolet)
 
-## 🎯 Overview
+**ComplianceAI** is an advanced, production-grade **RAG (Retrieval-Augmented Generation)** application designed to assist auditors and compliance officers. It automates specific regulatory inquiries by cross-referencing user queries against uploaded compliance documents, specifically optimized for the *Compliance Auditing Guidelines (C&AG of India)*.
 
-The Regulatory Compliance Assistant transforms complex regulatory compliance queries into natural, conversational interactions. It analyzes compliance documents, provides accurate assessments, and maintains context across multi-turn conversations—all while citing specific regulatory sources.
-
-### Key Features
-
-- **🤖 Conversational AI Agent**: Natural language interactions powered by **PydanticAI** and Llama 3.3 70B (Groq) with Fallback to OpenRouter.
-- **📚 Document Intelligence**: RAG-based retrieval using FAISS vector store with sentence transformers.
-- **⚡ Fast Track Retrieval**: Instant answers from a curated **Golden Knowledge Base** for high-confidence matches.
-- **🧠 Dynamic Reranking**: Advanced relevance scoring (**FlashRank**) to prioritize the best context.
-- **🎯 Strict Compliance Assessment**: Provides structured compliance status (Compliant/Non-Compliant/Needs Review) using strict **Pydantic** output validation.
-- **🔍 Smart Orchestration**: Distinguishes between initial queries, follow-ups, and clarifications using intelligent routing.
-- **💬 Context-Aware Conversations**: Maintains conversation history for follow-up questions in MongoDB.
-- **📖 Source Citations**: Every response includes references to specific regulatory documents.
-- **🎨 Modern UI**: Clean, ChatGPT-inspired interface built with React + Vite + Tailwind CSS.
+Unlike generic chatbots, ComplianceAI features a **Hybrid RAG Logic** with a "Fast Track" system for zero-latency Knowledge Base retrieval and configurable **Auditor Personas** to tailor the analysis tone.
 
 ---
 
-## 🏗️ Architecture
+## 🚀 Key Features
 
-### Technology Stack
+### 🧠 Advanced RAG Intelligence
+- **Hybrid Search Architecture**: Combines dense vector retrieval (FAISS) with high-precision reranking (Cross-Encoder) for superior accuracy.
+- **"Fast Track" Retrieval**: Instantly detects queries matching the Golden Knowledge Base, bypassing the LLM for faster, hallucination-free answers.
+- **Context-Aware Follow-ups**: Automatically suggests relevant follow-up questions based on the retrieved context.
 
-#### Backend
-- **Framework**: FastAPI (Python 3.11+)
-- **Agent Framework**: **PydanticAI** (Agentic Workflow & Validation)
-- **Primary LLM**: Llama 3.3 70B Versatile (via Groq API)
-- **Fallback LLM**: Gemini/OpenAI (via OpenRouter API - Free Tier)
-- **Vector Store**: FAISS with Sentence Transformers (`all-MiniLM-L6-v2`)
-- **Reranker**: FlashRank (Cross-Encoder)
-- **Database**: MongoDB (Conversation History) / Atlas
-- **Validation**: Pydantic (Strict Schema Enforcement)
-- **Logging**: Loguru + Correlation ID Tracking
+### 🎭 Configurable Auditor Personas
+Customize the AI's behavior via Profile Settings to match your reporting needs:
+- **Strict & Formal (Default)**: Adheres rigidly to regulatory text. authoritative tone.
+- **Educational**: Explains the "why" behind rules, acting as a mentor.
+- **Risk-Focused**: Prioritizes worst-case scenarios and penalty analysis.
+- **Concise**: Delivers bulleted, executive-summary style responses.
 
-#### Frontend
-- **Framework**: React 18 with Vite
-- **Styling**: Tailwind CSS
-- **Icons**: Lucide React
-- **HTTP Client**: Axios
-- **State Management**: React Hooks
+### 💻 Modern User Experience
+- **Glassmorphism UI**: A sleek, professional interface with animated backgrounds and responsive design.
+- **Interactive Demo Mode**: One-click access to a pre-loaded compliance environment with a built-in **PDF Document Viewer**.
+- **Persistent Sessions**: Automatically saves and manages the last 5 chat sessions per user.
+- **Secure Authentication**: Full JWT-based sign-up/login system with encrypted password storage.
 
-### System Diagram
+---
+
+## 🛠️ Technology Stack
+
+### Backend
+- **Framework**: FastAPI (Python 3.9+)
+- **LLM Engine**: LangChain + Groq API (Llama-3.70b-versatile)
+- **Vector Store**: FAISS (Local) + SentenceTransformers (`all-MiniLM-L6-v2`)
+- **Database**: MongoDB Atlas (User data & Chat History)
+- **Reranker**: `cross-encoder/ms-marco-MiniLM-L-6-v2`
+
+### Frontend
+- **Framework**: React.js (Vite)
+- **Styling**: Modern CSS3 (Glassmorphism, Animations)
+- **State Management**: React Hooks + Local Storage
+- **HTTP Client**: Axios with Interceptors
+
+---
+
+## 🏗️ Architecture Overview
 
 ```mermaid
 graph TD
-
-    Client[CompliancAI Web Client]
-    API[FastAPI Backend]
-
-    Client -->|Query API| API
-    Client -->|Ingest API| API
-    Client -->|Health API| API
-
-    Mongo[(MongoDB Atlas)]
-    GoldenKB[(Golden Knowledge Base)]
-    FollowupKB[(Followup Questions KB)]
-
-    API --> Mongo
-    API --> GoldenKB
-    API --> FollowupKB
-
-    subgraph PydanticAI[PydanticAI Agent Orchestration]
-        Router[Query Router]
-        FastTrack[Fast Track Answer]
-        Retrieve[Context Retrieval Tool]
-        Rerank[Reranker FlashRank]
-        Context[Context Assembly]
-        Agent[Compliance Agent]
-        Validate[Output Validation]
-        Followups[Followup Suggestions]
+    User[User] -->|Query| API[FastAPI Backend]
+    
+    subgraph "Auth Logic"
+        API -->|Verify Token| Auth[JWT Handler]
+        Auth -->|Fetch Profile| DB[(MongoDB)]
     end
-
-    API --> Router
-    Router --> FastTrack
-    Router --> Retrieve
-    Retrieve --> Rerank
-    Rerank --> Context
-    Context --> Agent
-    Agent --> Validate
-    Validate --> Followups
-
-    subgraph RAG[RAG Retrieval Layer]
-        Docs[(Regulatory PDF Documents)]
-        Embed[Embeddings Sentence Transformers]
-        FAISS[(FAISS Vector Store)]
+    
+    subgraph "RAG Pipeline"
+        API -->|Search| VectorDB[(FAISS Index)]
+        VectorDB -->|Top K Docs| Reranker[Cross-Encoder]
+        Reranker -->|Relevance Score| Decision{Confidence > Threshold?}
+        
+        Decision -- Yes (Fast Track) --> KB[Golden KB Match]
+        Decision -- No (Standard) --> LLM[Groq Llama-3]
+        
+        KB -->|Direct Answer| API
+        LLM -->|Generated Answer| API
     end
-
-    Docs --> Embed
-    Embed --> FAISS
-    Retrieve --> FAISS
-
-    subgraph Models[LLM Providers]
-        Groq[Groq LLM Primary]
-        OpenRouter[OpenRouter LLM Fallback]
+    
+    subgraph "Personalization"
+        DB -->|Get Persona| Agent[Compliance Agent]
+        Agent -->|Inject System Prompt| LLM
     end
-
-    Agent --> Groq
-    Agent --> OpenRouter
-
-    subgraph Reliability[Reliability and Observability]
-        Logs[Structured Logging]
-        Retry[Retries and Timeouts]
-        SafeErrors[Safe Error Handling]
-        RateLimit[Rate Limiting]
-    end
-
-    API --> Logs
-    API --> Retry
-    API --> SafeErrors
-    API --> RateLimit
-
-    Output[Validated Response Payload]
-    Followups --> Output
-    Output --> Client
-
-    subgraph Deploy[Live Deployment]
-        WebHost[Frontend Vercel or Netlify]
-        APIHost[Backend Render or Railway]
-        DBHost[MongoDB Atlas Managed]
-    end
-
-    Client --> WebHost
-    API --> APIHost
-    Mongo --> DBHost
 ```
 
 ---
 
-## 🚀 Getting Started
+## ⚡ Deployment & Setup
 
 ### Prerequisites
+- **Python 3.9+**
+- **Node.js 16+**
+- **MongoDB Cluster** (Atlas or Local)
+- **Groq API Key**
 
-- **Python**: 3.11 or higher
-- **Node.js**: 18.x or higher
-- **MongoDB**: 4.4+ (Local or Atlas)
-- **Groq API Key**: Get one from [console.groq.com](https://console.groq.com)
-- **OpenRouter API Key** (Optional): For fallback support.
-
-### Installation
-
-1. **Clone the repository**
-   ```bash
-   git clone https://github.com/arvindpandey4/regulatory_compliance_assistant.git
-   cd regulatory_compliance_assistant
-   ```
-
-2. **Backend Setup**
-   ```bash
-   cd backend
-   python -m venv venv
-   .\venv\Scripts\Activate.ps1  # Windows
-   # source venv/bin/activate    # Linux/Mac
-   
-   pip install -r requirements.txt
-   ```
-
-3. **Configure Environment Variables**
-   
-   Create `backend/.env`:
-   ```env
-   GROQ_API_KEY=your_groq_api_key_here
-   OPENROUTER_API_KEY=your_openrouter_key_here
-   MONGODB_URL=mongodb://localhost:27017
-   ```
-
-4. **Ingest Knowledge Base** (Optional but Recommended)
-   ```bash
-   # Ingest the Golden Knowledge Base (Fast Track):
-   cd backend
-   python ingest_kb.py
-   ```
-
-5. **Frontend Setup**
-   ```bash
-   cd ../frontend
-   npm install
-   ```
-
-### Running the Application
-
-#### Option 1: Run All Services (Recommended)
+### 1. Verification
+Clone the repository:
 ```bash
-# From project root
-.\run-all.ps1
+git clone https://github.com/yourusername/ComplianceAI.git
+cd ComplianceAI
 ```
 
-This starts:
-- Backend API: `http://127.0.0.1:8000`
-- Frontend UI: `http://localhost:5173`
-- API Docs: `http://127.0.0.1:8000/docs`
-
-#### Option 2: Run Services Separately
-
-**Backend:**
+### 2. Backend Setup
 ```bash
 cd backend
-.\venv\Scripts\Activate.ps1
-.\run.ps1
+python -m venv venv
+# Windows
+.\venv\Scripts\activate
+# Linux/Mac
+source venv/bin/activate
+
+pip install -r requirements.txt
 ```
 
-**Frontend:**
+Create a `.env` file in `/backend`:
+```env
+MONGODB_URI=mongodb+srv://<user>:<password>@cluster.mongodb.net/?retryWrites=true&w=majority
+GROQ_API_KEY=gsk_...
+SECRET_KEY=your_super_secret_jwt_key
+```
+
+### 3. Frontend Setup
 ```bash
-cd frontend
-npm run dev
+cd ../frontend
+npm install
 ```
 
-### Stopping the Application
-
-```bash
-# From project root
-.\stop-all.ps1
+### 4. Running the Application
+We provide a unified script for Windows users:
+```powershell
+# From root directory
+./run-all.ps1
 ```
-This safely terminates all processes and releases the ports.
+Or run manually:
+- **Backend**: `uvicorn main:app --reload` (Port 8000)
+- **Frontend**: `npm run dev` (Port 5173)
 
 ---
 
-## 📖 Usage
+## 📖 Usage Guide
 
-1. **Open the Application**: Navigate to `http://localhost:5173`.
-2. **Analysis Mode**: Ask complex questions like "Does our data retention policy comply with GDPR Article 5?". The agent will use RAG to retrieve documents and provide a formal assessment.
-3. **Fast-Track Mode**: Ask common questions like "What is the maximum fine under GDPR?". If the answer exists in the Golden KB, you'll get an instant, pre-verified response.
-4. **Follow-up**: Click suggested questions or ask your own to dig deeper.
+1.  **Register/Login**: Create an account to access the dashboard.
+2.  **Try Demo**: Click "Try Demo" to load the C&AG Guidelines instantly.
+    -   Click the **"View Document"** button (top right) to read the PDF alongside the chat.
+3.  **Upload Documents**: Drag & Drop your own PDF compliance documents to query them.
+4.  **Change Persona**: Click your Avatar → **Profile Settings** → Select a Persona (e.g., Risk-Focused) to change how the agent answers.
 
 ---
 
-## 🔧 API Documentation
+## 📂 Project Structure
 
-**Interactive Docs**: `http://127.0.0.1:8000/docs`
-
-#### `POST /api/v1/query/`
-Submit a compliance query. The PydanticAI agent orchestrates the response.
-
-**Request:**
-```json
-{
-  "query": "Does our policy comply with GDPR?",
-  "session_id": "optional-session-id"
-}
 ```
-
-**Response (Strict Schema):**
-```json
-{
-  "session_id": "uuid-v4",
-  "data": {
-    "response": "Based on the regulatory documents...",
-    "status": "Compliant|Non-Compliant|Needs Review",
-    "reasoning": "Detailed technical analysis...",
-    "relevant_clauses": ["GDPR Article 5(1)(e)"],
-    "sources": [
-      { "document_name": "GDPR_Guide.pdf", "excerpt": "...", "relevance_score": 0.92 }
-    ],
-    "conversation_type": "analysis",
-    "follow_up_questions": ["What about data minimisation?"]
-  }
-}
+ComplianceAI/
+├── backend/
+│   ├── app/
+│   │   ├── api/            # API Routes & Endpoints
+│   │   ├── core/           # Auth & DB Config
+│   │   ├── services/       # RAG Agent, Vector Store, Chat History
+│   │   └── models/         # Pydantic Schemas
+│   ├── data/
+│   │   ├── faiss_index/    # Local Vector Embeddings
+│   │   └── uploads/        # PDF Storage
+│   └── main.py             # Entry Point
+├── frontend/
+│   ├── src/
+│   │   ├── pages/          # Dashboard, Login, Register
+│   │   └── App.jsx         # Routing
+│   └── package.json
+└── README.md
 ```
 
 ---
 
-## 🤝 Contributing
-
-Contributions are welcome! Please follow these guidelines:
-1. Fork the repository.
-2. Create a feature branch.
-3. Commit your changes.
-4. Push to the branch.
-5. Open a Pull Request.
-
----
-
-## 📄 License
-
-This project is licensed under the MIT License - see the LICENSE file for details.
-
----
-
-## 👤 Author
-
-**Arvind Pandey**
-
-- GitHub: [@arvindpandey4](https://github.com/arvindpandey4)
-- Project: [Regulatory Compliance Assistant](https://github.com/arvindpandey4/regulatory_compliance_assistant)
-
----
-
-## 🙏 Acknowledgments
-
-- **Groq**: For providing fast LLM inference.
-- **PydanticAI**: For the robust agentic framework.
-- **LangChain & FAISS**: For RAG foundational components.
-- **FlashRank**: For ensuring high-quality retrieval.
+**Developed with ❤️ by the ComplianceAI Team.**
