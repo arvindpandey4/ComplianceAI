@@ -166,4 +166,4 @@ ComplianceAI/
 
 ---
 
-**Developed with ❤️ by the ComplianceAI Team.**
+**Developed with ❤️ by Arvind Pandey**

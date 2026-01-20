@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import './Dashboard.css';
+import { API_BASE_URL } from '../config';
 
 function Dashboard({ onLogout }) {
     const [user, setUser] = useState(null);
@@ -46,7 +47,7 @@ function Dashboard({ onLogout }) {
 
     const fetchUserProfile = async () => {
         try {
-            const response = await axios.get('http://127.0.0.1:8000/api/v1/auth/me', {
+            const response = await axios.get(`${API_BASE_URL}/auth/me`, {
                 headers: getAuthHeaders()
             });
             setUser(response.data);
@@ -59,7 +60,7 @@ function Dashboard({ onLogout }) {
     const handleUpdateProfile = async (e) => {
         e.preventDefault();
         try {
-            const response = await axios.patch('http://127.0.0.1:8000/api/v1/auth/me', settingsForm, {
+            const response = await axios.patch(`${API_BASE_URL}/auth/me`, settingsForm, {
                 headers: getAuthHeaders()
             });
             setUser(response.data);
@@ -74,7 +75,7 @@ function Dashboard({ onLogout }) {
 
     const handleViewDocument = async () => {
         try {
-            const response = await axios.get('http://127.0.0.1:8000/api/v1/query/knowledge/demo/pdf', {
+            const response = await axios.get(`${API_BASE_URL}/query/knowledge/demo/pdf`, {
                 headers: getAuthHeaders(),
                 responseType: 'blob'
             });
@@ -89,7 +90,7 @@ function Dashboard({ onLogout }) {
 
     const fetchChatHistory = async () => {
         try {
-            const response = await axios.get('http://127.0.0.1:8000/api/v1/query/history/sessions', {
+            const response = await axios.get(`${API_BASE_URL}/query/history/sessions`, {
                 headers: getAuthHeaders()
             });
             setChatHistory(response.data);
@@ -103,7 +104,7 @@ function Dashboard({ onLogout }) {
 
         setIsLoading(true);
         try {
-            const response = await axios.get(`http://127.0.0.1:8000/api/v1/query/history/${id}`, {
+            const response = await axios.get(`${API_BASE_URL}/query/history/${id}`, {
                 headers: getAuthHeaders()
             });
 
@@ -146,7 +147,7 @@ function Dashboard({ onLogout }) {
         });
 
         try {
-            await axios.post('http://127.0.0.1:8000/api/v1/ingest/', formData, {
+            await axios.post(`${API_BASE_URL}/ingest/`, formData, {
                 headers: {
                     ...getAuthHeaders(),
                     'Content-Type': 'multipart/form-data'
@@ -201,7 +202,7 @@ function Dashboard({ onLogout }) {
 
         try {
             const response = await axios.post(
-                'http://127.0.0.1:8000/api/v1/query/',
+                `${API_BASE_URL}/query/`,
                 {
                     query: userMessage,
                     session_id: sessionId

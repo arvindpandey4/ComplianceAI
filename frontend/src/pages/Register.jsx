@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import './Auth.css';
+import { API_BASE_URL } from '../config';
 
 function Register({ onRegister }) {
     const [formData, setFormData] = useState({
@@ -38,7 +39,7 @@ function Register({ onRegister }) {
         setIsLoading(true);
 
         try {
-            const response = await axios.post('http://127.0.0.1:8000/api/v1/auth/register', {
+            const response = await axios.post(`${API_BASE_URL}/auth/register`, {
                 email: formData.email,
                 password: formData.password,
                 full_name: formData.full_name
