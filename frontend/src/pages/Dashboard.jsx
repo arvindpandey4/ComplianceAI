@@ -377,6 +377,14 @@ function Dashboard({ onLogout }) {
                                         setMessages([{
                                             role: 'system',
                                             content: 'Demo document loaded: "Compliance Auditing Guidelines – C&AG of India". You can now ask questions about compliance auditing!'
+                                        }, {
+                                            role: 'assistant',
+                                            content: 'Welcome! I\'ve loaded the Compliance Auditing Guidelines. Here are some questions you can ask:',
+                                            followUpQuestions: [
+                                                'What are the key principles of compliance auditing?',
+                                                'What is the role of internal controls in compliance auditing?',
+                                                'How should auditors assess compliance with laws and regulations?'
+                                            ]
                                         }]);
                                     }}
                                 >
