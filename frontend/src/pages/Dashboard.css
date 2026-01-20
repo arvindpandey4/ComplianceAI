@@ -924,29 +924,336 @@
    RESPONSIVE
    =================================== */
 
-@media (max-width: 768px) {
-    .dashboard-header {
-        padding: 16px 20px;
-        flex-wrap: wrap;
+/* Tablet (768px - 1024px) */
+@media (max-width: 1024px) {
+    .dashboard-sidebar {
+        width: 220px;
     }
 
-    .header-left h1 {
-        font-size: 20px;
+    .messages-area {
+        padding: 24px;
+    }
+
+    .upload-section {
+        padding: 32px 24px;
+    }
+}
+
+/* Mobile (max-width: 768px) */
+@media (max-width: 768px) {
+    .dashboard-header {
+        padding: 12px 16px;
+    }
+
+    .header-left {
+        gap: 12px;
+    }
+
+    .logo-badge {
+        width: 40px;
+        height: 40px;
+    }
+
+    .logo-badge svg {
+        width: 22px;
+        height: 22px;
+    }
+
+    .dashboard-header h1 {
+        font-size: 18px;
+    }
+
+    .header-subtitle {
+        font-size: 11px;
+    }
+
+    .header-right {
+        gap: 8px;
     }
 
     .user-name {
         display: none;
     }
 
+    .user-info {
+        padding: 6px 10px;
+    }
+
+    .user-avatar {
+        width: 32px;
+        height: 32px;
+        font-size: 14px;
+    }
+
+    .btn-view-doc {
+        padding: 8px 12px;
+        font-size: 13px;
+        gap: 6px;
+    }
+
+    .btn-view-doc svg {
+        width: 16px;
+        height: 16px;
+    }
+
+    /* Hide sidebar by default on mobile, show with toggle */
+    .dashboard-sidebar {
+        position: fixed;
+        left: -280px;
+        top: 0;
+        bottom: 0;
+        width: 280px;
+        z-index: 100;
+        transition: left 0.3s ease;
+        padding: 16px;
+    }
+
+    .dashboard-sidebar.mobile-open {
+        left: 0;
+        box-shadow: 4px 0 12px rgba(0, 0, 0, 0.3);
+    }
+
+    .dashboard-main {
+        width: 100%;
+    }
+
     .messages-area {
-        padding: 20px;
+        padding: 16px;
+        gap: 16px;
+    }
+
+    .message {
+        gap: 8px;
+    }
+
+    .message-avatar {
+        width: 28px;
+        height: 28px;
+        font-size: 12px;
+    }
+
+    .bot-avatar svg {
+        width: 14px;
+        height: 14px;
+    }
+
+    .message-text {
+        font-size: 14px;
+    }
+
+    .message-user .message-content,
+    .message-assistant .message-content {
+        padding: 12px 14px;
+    }
+
+    .followup-btn {
+        padding: 10px 12px;
+        font-size: 13px;
     }
 
     .input-area {
-        padding: 16px 20px;
+        padding: 12px 16px;
+    }
+
+    .input-form {
+        gap: 8px;
+    }
+
+    .btn-upload-more,
+    .btn-send {
+        width: 40px;
+        height: 40px;
+    }
+
+    .chat-input {
+        padding: 12px 16px;
+        font-size: 14px;
+    }
+
+    .upload-section {
+        padding: 24px 16px;
+        gap: 24px;
+    }
+
+    .upload-zone {
+        padding: 40px 24px;
+    }
+
+    .upload-zone h2 {
+        font-size: 20px;
+    }
+
+    .upload-zone p {
+        font-size: 14px;
+    }
+
+    .upload-icon {
+        width: 60px;
+        height: 60px;
+    }
+
+    .upload-icon svg {
+        width: 32px;
+        height: 32px;
+    }
+
+    .btn-demo {
+        padding: 14px 20px;
+        font-size: 14px;
+        gap: 10px;
+    }
+
+    .btn-demo svg {
+        width: 18px;
+        height: 18px;
+    }
+
+    .settings-modal {
+        width: 95%;
+        padding: 20px;
+    }
+
+    .modal-header h2 {
+        font-size: 18px;
+    }
+
+    .empty-state h2 {
+        font-size: 20px;
+    }
+
+    .empty-state p {
+        font-size: 14px;
+    }
+
+    .empty-icon {
+        font-size: 48px;
+    }
+}
+
+/* Small Mobile (max-width: 480px) */
+@media (max-width: 480px) {
+    .dashboard-header {
+        padding: 10px 12px;
+    }
+
+    .dashboard-header h1 {
+        font-size: 16px;
+    }
+
+    .header-subtitle {
+        display: none;
+    }
+
+    .logo-badge {
+        width: 36px;
+        height: 36px;
+    }
+
+    .logo-badge svg {
+        width: 20px;
+        height: 20px;
+    }
+
+    .btn-view-doc span {
+        display: none;
+    }
+
+    .btn-view-doc {
+        padding: 8px;
+        min-width: 36px;
+    }
+
+    .messages-area {
+        padding: 12px;
     }
 
     .message-content {
         max-width: 100%;
+    }
+
+    .upload-zone {
+        padding: 32px 16px;
+    }
+
+    .upload-zone h2 {
+        font-size: 18px;
+    }
+
+    .upload-icon {
+        width: 50px;
+        height: 50px;
+        margin-bottom: 16px;
+    }
+
+    .upload-icon svg {
+        width: 28px;
+        height: 28px;
+    }
+
+    .btn-demo {
+        font-size: 13px;
+        padding: 12px 16px;
+    }
+
+    .input-area {
+        padding: 10px 12px;
+    }
+
+    .btn-upload-more,
+    .btn-send {
+        width: 36px;
+        height: 36px;
+    }
+
+    .btn-upload-more svg,
+    .btn-send svg {
+        width: 18px;
+        height: 18px;
+    }
+
+    .chat-input {
+        padding: 10px 14px;
+        font-size: 13px;
+    }
+
+    .modal-actions {
+        flex-direction: column-reverse;
+    }
+
+    .btn-cancel,
+    .btn-save {
+        width: 100%;
+    }
+}
+
+/* Landscape Mobile */
+@media (max-height: 600px) and (orientation: landscape) {
+    .upload-section {
+        padding: 20px 16px;
+    }
+
+    .upload-zone {
+        padding: 24px 20px;
+    }
+
+    .upload-icon {
+        width: 50px;
+        height: 50px;
+        margin-bottom: 12px;
+    }
+
+    .messages-area {
+        padding: 16px;
+    }
+}
+
+/* Animation for fade in */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
     }
 }

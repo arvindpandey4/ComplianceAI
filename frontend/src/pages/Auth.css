@@ -57,12 +57,16 @@
 }
 
 @keyframes float {
-  0%, 100% {
+
+  0%,
+  100% {
     transform: translate(0, 0) scale(1);
   }
+
   33% {
     transform: translate(30px, -30px) scale(1.1);
   }
+
   66% {
     transform: translate(-20px, 20px) scale(0.9);
   }
@@ -80,7 +84,7 @@
   -webkit-backdrop-filter: blur(20px);
   border-radius: 24px;
   border: 1px solid rgba(255, 255, 255, 0.18);
-  box-shadow: 
+  box-shadow:
     0 8px 32px 0 rgba(0, 0, 0, 0.37),
     inset 0 0 0 1px rgba(255, 255, 255, 0.05);
   animation: slideUp 0.6s ease-out;
@@ -91,6 +95,7 @@
     opacity: 0;
     transform: translateY(30px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -277,17 +282,105 @@
 }
 
 /* Responsive */
-@media (max-width: 640px) {
+@media (max-width: 768px) {
   .auth-card {
-    margin: 20px;
-    padding: 32px 24px;
+    margin: 16px;
+    padding: 36px 28px;
+    max-width: 100%;
   }
 
   .auth-header h1 {
     font-size: 24px;
   }
 
+  .auth-subtitle {
+    font-size: 14px;
+  }
+
   .gradient-orb {
     filter: blur(60px);
+  }
+
+  .orb-1 {
+    width: 350px;
+    height: 350px;
+  }
+
+  .orb-2 {
+    width: 300px;
+    height: 300px;
+  }
+
+  .orb-3 {
+    width: 250px;
+    height: 250px;
+  }
+}
+
+@media (max-width: 480px) {
+  .auth-card {
+    margin: 12px;
+    padding: 28px 20px;
+  }
+
+  .auth-header {
+    margin-bottom: 24px;
+  }
+
+  .auth-header h1 {
+    font-size: 22px;
+  }
+
+  .auth-subtitle {
+    font-size: 13px;
+  }
+
+  .logo-icon {
+    width: 36px;
+    height: 36px;
+  }
+
+  .logo-icon svg {
+    width: 20px;
+    height: 20px;
+  }
+
+  .form-group {
+    gap: 6px;
+  }
+
+  .form-group label {
+    font-size: 13px;
+  }
+
+  .form-group input {
+    padding: 12px 14px;
+    font-size: 14px;
+  }
+
+  .btn-primary {
+    padding: 13px 20px;
+    font-size: 14px;
+  }
+
+  .error-message {
+    padding: 10px 14px;
+    font-size: 13px;
+  }
+
+  .auth-footer {
+    margin-top: 20px;
+    padding-top: 20px;
+  }
+
+  .auth-footer p {
+    font-size: 13px;
+  }
+
+  .orb-1,
+  .orb-2,
+  .orb-3 {
+    width: 250px;
+    height: 250px;
   }
 }
