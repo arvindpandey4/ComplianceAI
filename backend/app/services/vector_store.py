@@ -29,7 +29,12 @@ class VectorStoreService:
         # FastEmbed default is BAAI/bge-small-en-v1.5 which is better than MiniLM.
         # However, if we want to reuse existing index, we need compatible dims (384).
         # BAAI/bge-small-en-v1.5 has 384 dims.
-        self.embeddings = FastEmbedEmbeddings(model_name="BAAI/bge-small-en-v1.5")
+        # threads=1 is CRITICAL for 512MB RAM instances to prevent OOM
+        self.embeddings = FastEmbedEmbeddings(
+            model_name="BAAI/bge-small-en-v1.5",
+            threads=1,
+            cache_dir="data/fastembed_cache"
+        )
         
         # Reranking Disabled for Free Tier (Save RAM)
         # self.reranker = CrossEncoder('cross-encoder/ms-marco-MiniLM-L-6-v2')
@@ -53,6 +58,10 @@ class VectorStoreService:
                 self.vector_db = None
         else:
             print("No existing index found. Starting fresh.")
+        
+        # Explicit garbage collection to free up memory after initialization
+        import gc
+        gc.collect()
 
     def add_documents(self, documents: List[Document]):
         if not documents:
