@@ -1,8 +1,7 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import axios from 'axios';
 import './Auth.css';
-import { API_BASE_URL } from '../config';
+import { register } from '../utils/api';
 
 function Register({ onRegister }) {
     const [formData, setFormData] = useState({
@@ -13,6 +12,7 @@ function Register({ onRegister }) {
     });
     const [error, setError] = useState('');
     const [isLoading, setIsLoading] = useState(false);
+    const [statusMessage, setStatusMessage] = useState('');
     const navigate = useNavigate();
 
     const handleChange = (e) => {
@@ -25,6 +25,7 @@ function Register({ onRegister }) {
     const handleSubmit = async (e) => {
         e.preventDefault();
         setError('');
+        setStatusMessage('');
 
         if (formData.password !== formData.confirmPassword) {
             setError('Passwords do not match');
@@ -39,27 +40,35 @@ function Register({ onRegister }) {
         setIsLoading(true);
 
         try {
-            const response = await axios.post(`${API_BASE_URL}/auth/register`, {
-                email: formData.email,
-                password: formData.password,
-                full_name: formData.full_name
-            }, {
-                timeout: 60000 // 60 second timeout
-            });
+            const data = await register(
+                formData.email,
+                formData.password,
+                formData.full_name,
+                (message) => {
+                    setStatusMessage(message);
+                }
+            );
 
-            const { access_token, user } = response.data;
+            const { access_token, user } = data;
             onRegister(access_token, user);
             navigate('/dashboard');
         } catch (err) {
+            console.error('Registration error:', err);
+
             if (err.code === 'ECONNABORTED') {
-                setError('Request timeout. Please check your connection and try again.');
+                setError('Server is taking too long to respond. The backend might be starting up. Please wait a moment and try again.');
             } else if (err.code === 'ERR_NETWORK') {
-                setError('Cannot connect to server. Please check if the backend is running.');
+                setError('Cannot connect to server. Please check your internet connection.');
+            } else if (err.response?.status === 404) {
+                setError('Server endpoint not found. Please contact support if this persists.');
+            } else if (err.response?.status === 503) {
+                setError('Server is temporarily unavailable. Please try again in a moment.');
             } else {
                 setError(err.response?.data?.detail || 'Registration failed. Please try again.');
             }
         } finally {
             setIsLoading(false);
+            setStatusMessage('');
         }
     };
 
@@ -93,6 +102,15 @@ function Register({ onRegister }) {
                                 <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
                             </svg>
                             {error}
+                        </div>
+                    )}
+
+                    {statusMessage && !error && (
+                        <div className="info-message">
+                            <svg viewBox="0 0 20 20" fill="currentColor">
+                                <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
+                            </svg>
+                            {statusMessage}
                         </div>
                     )}
 
